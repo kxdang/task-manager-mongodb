@@ -4,12 +4,14 @@
 // const mongoClient = mongodb.MongoClient;
 // const ObjectID = mongodb.ObjectID
 
-const { MongoClient, ObjectID } = require("mongodb");
+const { MongoClient, ObjectID } = require("mongodb"); //destructoring from mongodb
 
 const connectionURL = "mongodb://127.0.0.1:27017";
 const databaseName = "task-manager";
 
-mongoClient.connect(
+const id = new ObjectID();
+
+MongoClient.connect(
   connectionURL,
   { useNewUrlParser: true },
   (error, client) => {
@@ -19,60 +21,39 @@ mongoClient.connect(
 
     const db = client.db(databaseName);
 
-    // db.collection("users").insertOne(
-    //   {
-    //     name: "Kien",
-    //     age: 25
-    //   },
-    //   (error, result) => {
+    // db.collection("users").findOne(
+    //   { _id: new ObjectID("5d8cd7aa4db47847f41bc444") },
+    //   (error, user) => {
     //     if (error) {
-    //       return console.log("Unable to insert user");
+    //       return console.log("Unable to fetch");
     //     }
 
-    //     console.log(result.ops);
+    //     console.log(user);
     //   }
     // );
-    // db.collection("users").insertMany(
-    //   [
-    //     {
-    //       name: "Dan",
-    //       age: 28
-    //     },
-    //     {
-    //       name: "Mikey",
-    //       age: 26
-    //     }
-    //   ],
-    //   (error, result) => {
-    //     if (error) {
-    //       return console.log("Unable to insert documents");
-    //     }
+    // db.collection("users")
+    //   .find({ age: 25 })
+    //   .toArray((error, users) => {
+    //     console.log(users);
+    //   });
 
-    //     console.log(result.ops);
-    //   }
-    // );
-    db.collection("tasks").insertMany(
-      [
-        {
-          description: "Finish course",
-          completed: false
-        },
-        {
-          description: "Be a boss",
-          completed: true
-        },
-        {
-          description: "Do challenge",
-          completed: true
-        }
-      ],
-      (error, result) => {
-        if (error) {
-          console.log("Something went wrong");
-        }
+    // db.collection("users")
+    //   .find({ age: 25 })
+    //   .count((error, count) => {
+    //     console.log(count);
+    //   });
 
-        console.log(result.ops);
+    db.collection("tasks").findOne(
+      { _id: new ObjectID("5d8cee00460c3447c851017d") },
+      (error, task) => {
+        console.log(task);
       }
     );
+
+    db.collection("tasks")
+      .find({ completed: false })
+      .toArray((error, notCompleted) => {
+        console.log(notCompleted);
+      });
   }
 );
