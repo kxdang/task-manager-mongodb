@@ -27,8 +27,8 @@ MongoClient.connect(
           _id: new ObjectID("5d8cd94269884c1444533919")
         },
         {
-          $set: {
-            name: "Billy"
+          $inc: {
+            age: 5
           }
         }
       )
