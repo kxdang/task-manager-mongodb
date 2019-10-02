@@ -21,6 +21,7 @@ app.post("/users", (req, res) => {
     });
 });
 
+//get all users
 app.get("/users", (req, res) => {
   User.find({})
     .then(users => {
@@ -31,6 +32,7 @@ app.get("/users", (req, res) => {
     });
 });
 
+//get a single user by id
 app.get("/users/:id", (req, res) => {
   const _id = req.params.id;
   User.findById(_id)
@@ -54,6 +56,33 @@ app.post("/tasks", (req, res) => {
     .save()
     .then(() => {
       res.status(201).send(newTask);
+    })
+    .catch(e => {
+      res.status(400).send(e);
+    });
+});
+
+//get all tasks
+app.get("/tasks", (req, res) => {
+  task
+    .find({})
+    .then(tasks => res.send(tasks))
+    .catch(e => {
+      res.status(400).send(e);
+    });
+});
+
+//get a single task by ID
+app.get("/tasks/:id", (req, res) => {
+  const _id = req.params.id;
+  task
+    .findById(_id)
+    .then(task => {
+      if (!task) {
+        return res.status(404).send();
+      }
+
+      res.send(task);
     })
     .catch(e => {
       res.status(400).send(e);
