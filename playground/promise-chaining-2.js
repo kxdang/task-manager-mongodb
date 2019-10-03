@@ -2,13 +2,12 @@ require("../src/db/mongoose");
 const task = require("../src/models/task");
 
 task
-  .findByIdAndRemove("5d94f65dbd83023414a4cb29")
+  .findByIdAndDelete("5d93de2974dce127a0c6c60d")
   .then(tasks => {
-    console.log(tasks);
     return task.countDocuments({ completed: false });
   })
   .then(result => {
-    console.log(result);
+    console.log(`There are ${result} incompleted left`);
   })
   .catch(e => {
     console.log(e);

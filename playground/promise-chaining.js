@@ -12,3 +12,7 @@ User.findByIdAndUpdate("5d94df9c9c2db62b4805af79", { age: 1 })
   .catch(e => {
     console.log(e);
   });
+
+const updateAgeAndCount = async (id, age) => {
+  const user = await User.findByIdAndUpdate(id, { age });
+};
