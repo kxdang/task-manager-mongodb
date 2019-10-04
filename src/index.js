@@ -46,6 +46,7 @@ app.get("/users/:id", async (req, res) => {
   }
 });
 
+//setting route to update a specific property via ID
 app.patch("/users/:id", async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ["name", "email", "password", "age"];
@@ -71,6 +72,33 @@ app.patch("/users/:id", async (req, res) => {
   }
 });
 
+app.patch("/tasks/:id", async (req, res) => {
+  const updates = Object.keys(req.body);
+  const allowedUpdates = ["description", "completed"];
+  //prettier-ignore
+  const isValidOperation = updates.every(update => allowedUpdates.includes(update))
+
+  if (!isValidOperation) {
+    return res
+      .status(400)
+      .send({ error: "Invalid updates because no key is found!" });
+  }
+
+  try {
+    const singleTask = await task.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    });
+
+    if (!singleTask) {
+      return res.status(404).send();
+    }
+
+    res.send(singleTask);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
 app.post("/tasks", async (req, res) => {
   const newTask = new task(req.body);
 
