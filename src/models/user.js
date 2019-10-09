@@ -43,6 +43,12 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-const User = mongoose.model("User", userSchema);
+userSchema.pre("save", async function(next) {
+  const user = this;
+  console.log("just before saving!");
+  next();
+}); // no arrow functions allowed because arrow functions do not bind this
+
+const User = mongoose.model("User", userSchema); //using middleware by adding schema on second param
 
 module.exports = User;
