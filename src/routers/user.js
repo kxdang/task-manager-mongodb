@@ -59,23 +59,6 @@ router.get("/users/me", auth, async (req, res) => {
   res.send(req.user);
 });
 
-//get a single user by id
-router.get("/users/:id", async (req, res) => {
-  const _id = req.params.id;
-
-  try {
-    const user = await User.findById(_id);
-
-    if (!user) {
-      return res.status(404).send;
-    }
-
-    res.send(user);
-  } catch (e) {
-    res.status(500).send();
-  }
-});
-
 //setting route to update a specific property via ID
 router.patch("/users/:id", async (req, res) => {
   const updates = Object.keys(req.body);
@@ -109,15 +92,10 @@ router.patch("/users/:id", async (req, res) => {
 });
 
 //deleting a user
-router.delete("/users/:id", async (req, res) => {
+router.delete("/users/me", auth, async (req, res) => {
   try {
-    const user = await User.findByIdAndDelete(req.params.id);
-
-    if (!user) {
-      return res.status(404).send();
-    }
-
-    res.send(user);
+    await req.user.remove();
+    res.send(req.user);
   } catch (e) {
     res.status(500).send();
   }
