@@ -1,5 +1,6 @@
 const express = require("express");
 const router = new express.Router();
+const auth = require("../middleware/auth");
 const User = require("../models/user");
 
 //Create new user
@@ -15,7 +16,7 @@ router.post("/users", async (req, res) => {
   }
 });
 
-//User sign in
+//User log in
 router.post("/users/login", async (req, res) => {
   try {
     const user = await User.findByCredentials(
@@ -29,14 +30,22 @@ router.post("/users/login", async (req, res) => {
   }
 });
 
-//get all users
-router.get("/users", async (req, res) => {
+router.post("/users/logout", auth, async (req, res) => {
   try {
-    const users = await User.find({});
-    res.send(users);
+    req.user.tokens = req.user.tokens.filter(token => {
+      return token.token !== req.token;
+    });
+    await req.user.save();
+
+    res.send();
   } catch (e) {
     res.status(500).send();
   }
+});
+
+//get all users
+router.get("/users/me", auth, async (req, res) => {
+  res.send(req.user);
 });
 
 //get a single user by id
