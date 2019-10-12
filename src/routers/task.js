@@ -18,7 +18,7 @@ router.post("/tasks", auth, async (req, res) => {
 });
 
 //Update a single task
-router.patch("/tasks/:id", async (req, res) => {
+router.patch("/tasks/:id", auth, async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ["description", "completed"];
   //prettier-ignore
@@ -31,21 +31,16 @@ router.patch("/tasks/:id", async (req, res) => {
   }
 
   try {
-    const singleTask = await task.findById(req.params.id);
-
-    updates.forEach(update => (singleTask[update] = req.body[update]));
-
-    await singleTask.save();
-
-    // const singleTask = await task.findByIdAndUpdate(req.params.id, req.body, {
-    //   new: true,
-    //   runValidators: true
-    // });
+    const singleTask = await task.findOne({
+      _id: req.params.id,
+      author: req.user._id
+    });
 
     if (!singleTask) {
       return res.status(404).send();
     }
-
+    updates.forEach(update => (singleTask[update] = req.body[update]));
+    await singleTask.save();
     res.send(singleTask);
   } catch (e) {
     res.status(400).send(e);
@@ -53,9 +48,9 @@ router.patch("/tasks/:id", async (req, res) => {
 });
 
 //get all tasks
-router.get("/tasks", async (req, res) => {
+router.get("/tasks", auth, async (req, res) => {
   try {
-    const allTasks = await task.find({});
+    const allTasks = await task.find({ author: req.user._id });
     res.send(allTasks);
   } catch (e) {
     res.status(500).send(e);
@@ -63,11 +58,11 @@ router.get("/tasks", async (req, res) => {
 });
 
 //get a single task by ID
-router.get("/tasks/:id", async (req, res) => {
+router.get("/tasks/:id", auth, async (req, res) => {
   const _id = req.params.id;
 
   try {
-    const singleTask = await task.findById({ _id });
+    const singleTask = await task.findOne({ _id, author: req.user._id });
     if (!singleTask) {
       return res.status(404).send();
     }
@@ -78,9 +73,13 @@ router.get("/tasks/:id", async (req, res) => {
 });
 
 //delete task
-router.delete("/tasks/:id", async (req, res) => {
+router.delete("/tasks/:id", auth, async (req, res) => {
   try {
-    const singleTask = await task.findByIdAndDelete(req.params.id);
+    // const singleTask = await task.findByIdAndDelete(req.params.id);
+    const singleTask = await task.findOneAndDelete({
+      _id: req.params.id,
+      author: req.user._id
+    });
 
     if (!singleTask) {
       return res.status(404).send();
