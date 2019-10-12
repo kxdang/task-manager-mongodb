@@ -1,6 +1,21 @@
 const express = require("express");
 const router = new express.Router();
+const auth = require("../middleware/auth");
 const task = require("../models/task");
+
+router.post("/tasks", auth, async (req, res) => {
+  const newTask = new task({
+    ...req.body,
+    author: req.user._id
+  });
+
+  try {
+    await newTask.save();
+    res.status(201).send(newTask);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
 
 //Update a single task
 router.patch("/tasks/:id", async (req, res) => {
@@ -32,18 +47,6 @@ router.patch("/tasks/:id", async (req, res) => {
     }
 
     res.send(singleTask);
-  } catch (e) {
-    res.status(400).send(e);
-  }
-});
-
-//updating tasks
-router.post("/tasks", async (req, res) => {
-  const newTask = new task(req.body);
-
-  try {
-    await newTask.save();
-    res.status(201).send(newTask);
   } catch (e) {
     res.status(400).send(e);
   }
