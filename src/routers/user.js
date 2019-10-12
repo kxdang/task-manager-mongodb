@@ -24,7 +24,7 @@ router.post("/users/login", async (req, res) => {
       req.body.password
     );
     const token = await user.generateAuthToken();
-    res.send({ user, token });
+    res.send({ user: user.getPublicProfile(), token });
   } catch (e) {
     res.status(400).send();
   }
@@ -37,6 +37,17 @@ router.post("/users/logout", auth, async (req, res) => {
     });
     await req.user.save();
 
+    res.send();
+  } catch (e) {
+    res.status(500).send();
+  }
+});
+
+//log out all users
+router.post("/users/logoutAll", auth, async (req, res) => {
+  try {
+    req.user.tokens = [];
+    await req.user.save();
     res.send();
   } catch (e) {
     res.status(500).send();
