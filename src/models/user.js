@@ -4,56 +4,61 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Task = require("./task");
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  email: {
-    type: String,
-    unique: true,
-    required: true,
-    trim: true,
-    lowercase: true,
-    validate(value) {
-      if (!validator.isEmail(value)) {
-        throw new Error("Email is invalid");
-      }
-    }
-  },
-  age: {
-    type: Number,
-    default: 0,
-    validate(value) {
-      if (value < 0) {
-        throw new Error("age must be a positive number");
-      }
-    }
-  },
-  password: {
-    type: String,
-    required: true,
-    trim: true,
-    validate(value) {
-      if (validator.isLength(value, { min: 6, max: undefined })) {
-        if (value.toLowerCase().includes("password", 0)) {
-          throw new Error("Cannot contain password as pw");
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    email: {
+      type: String,
+      unique: true,
+      required: true,
+      trim: true,
+      lowercase: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Email is invalid");
         }
-      } else {
-        throw new Error("Not long enough, must be 6 characters");
       }
-    }
+    },
+    age: {
+      type: Number,
+      default: 0,
+      validate(value) {
+        if (value < 0) {
+          throw new Error("age must be a positive number");
+        }
+      }
+    },
+    password: {
+      type: String,
+      required: true,
+      trim: true,
+      validate(value) {
+        if (validator.isLength(value, { min: 6, max: undefined })) {
+          if (value.toLowerCase().includes("password", 0)) {
+            throw new Error("Cannot contain password as pw");
+          }
+        } else {
+          throw new Error("Not long enough, must be 6 characters");
+        }
+      }
+    },
+    tokens: [
+      {
+        token: {
+          type: String,
+          required: true
+        }
+      }
+    ]
   },
-  tokens: [
-    {
-      token: {
-        type: String,
-        required: true
-      }
-    }
-  ]
-});
+  {
+    timestamps: true
+  }
+);
 
 userSchema.virtual("tasks", {
   ref: "task",
