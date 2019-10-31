@@ -112,5 +112,28 @@ test("Should upload avatar image", async () => {
     .expect(200);
 
   const user = await User.findById(userOneId);
-  expect({}).toEqual({});
+  expect(user.avatar).toEqual(expect.any(Buffer));
+});
+
+test("Should update valid user fields", async () => {
+  await request(app)
+    .patch("/users/me")
+    .send({
+      name: `Jess`
+    })
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .expect(200);
+
+  const user = await User.findById(userOneId);
+  expect(user.name).toEqual("Jess");
+});
+
+test("Should not update valid user fields", async () => {
+  await request(app)
+    .patch("/users/me")
+    .send({
+      color: `Brown`
+    })
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .expect(400);
 });
