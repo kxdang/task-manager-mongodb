@@ -119,3 +119,12 @@ test("Should not update valid user fields", async () => {
     .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
     .expect(400);
 });
+
+test("Should not sign up user with invalid name/email/password", async () => {
+  await request(app)
+    .post("/users")
+    .send({
+      name: 4
+    })
+    .expect(400);
+});
